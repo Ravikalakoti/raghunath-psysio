@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="max-width:380px;margin:60px auto">
+  <div class="letterhead"><h1>{{ CLINIC_NAME }}</h1><small>{{ CLINIC_TAGLINE }}</small></div>
+  <h2>Admin Login</h2>
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Login</button>
+  </form>
+</div>
+{% endblock %}

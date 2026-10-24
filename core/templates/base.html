@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ CLINIC_NAME }}{% endblock %}</title>
+<meta name="theme-color" content="#0f766e">
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--text:#1f2937;--muted:#6b7280;--primary:#0f766e;--border:#e5e7eb;--danger:#b91c1c}
+@media (prefers-color-scheme:dark){:root{--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--primary:#2dd4bf;--border:#374151;--danger:#f87171}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+nav{background:var(--card);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+nav .brand{font-weight:700;color:var(--primary);margin-right:auto}
+nav a{color:var(--text);text-decoration:none}
+nav form{margin:0}
+main{max-width:980px;margin:20px auto;padding:0 14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;overflow-x:auto}
+h1{font-size:1.4rem;margin:0 0 14px}h2{font-size:1.1rem;margin:0 0 10px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.92rem}
+.btn{display:inline-block;background:var(--primary);color:#fff;border:0;border-radius:6px;padding:8px 14px;text-decoration:none;cursor:pointer;font-size:.9rem}
+@media (prefers-color-scheme:dark){.btn{color:#111827}}
+.btn.alt{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+.btn.wa{background:#25d366;color:#073b1a}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+.stat b{display:block;font-size:1.6rem}.stat span{color:var(--muted);font-size:.85rem}
+.letterhead{text-align:center;border-bottom:2px solid var(--primary);padding-bottom:10px;margin-bottom:14px}.letterhead h1{margin:0;color:var(--primary);font-size:1.6rem}.letterhead small{color:var(--muted);display:block}
+.msg{padding:10px 14px;border-radius:8px;margin-bottom:10px;background:#d1fae5;color:#065f46}
+.msg.error{background:#fee2e2;color:#991b1b}
+label{display:block;margin:12px 0 4px;font-weight:600}
+input,select,textarea{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font:inherit}
+input[type=checkbox]{width:auto}
+.help{color:var(--muted);font-size:.8rem}.errorlist{color:var(--danger);margin:4px 0;padding-left:18px}
+.tag{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--border)}
+.tag.ok{background:#d1fae5;color:#065f46}.tag.warn{background:#fef3c7;color:#92400e}
+.muted{color:var(--muted)}
+@media print{nav,.noprint,.msgs{display:none!important}body{background:#fff;color:#000}.card{border:0}}
+</style>
+</head>
+<body>
+{% if user.is_authenticated %}
+<nav>
+  <span class="brand">{{ CLINIC_NAME }}</span>
+  <a href="{% url 'dashboard' %}">Dashboard</a>
+  <a href="{% url 'patient_list' %}">Patients</a>
+  <a href="{% url 'doctor_list' %}">Physiotherapists</a>
+  <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn alt" type="submit">Logout</button></form>
+</nav>
+{% endif %}
+<main>
+  <div class="msgs">
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+  </div>
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

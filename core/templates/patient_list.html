@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Patients</h1>
+<form method="get" class="row">
+  <input name="q" value="{{ q }}" placeholder="Search by name / email / phone" style="max-width:320px">
+  <button class="btn alt" type="submit">Search</button>
+  <a class="btn" href="{% url 'patient_add' %}">+ New patient</a>
+</form>
+<div class="card">
+  <table>
+    <tr><th>Reg No</th><th>Name</th><th>Age</th><th>Email</th><th>Physiotherapist</th><th>Registered</th></tr>
+    {% for p in patients %}
+    <tr><td>{{ p.registration_no }}</td><td><a href="{% url 'patient_detail' p.pk %}">{{ p.name }}</a></td>
+    <td>{{ p.age }}</td><td>{{ p.email }}</td><td>{{ p.doctor }}</td>
+    <td>{{ p.registered_at|date:"d M Y, h:i A" }}</td></tr>
+    {% empty %}<tr><td colspan="6" class="muted">No patients found.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

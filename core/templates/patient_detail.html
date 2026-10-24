@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h1>{{ patient.name }} <span class="tag">{{ patient.registration_no }}</span></h1>
+  <p>Age: {{ patient.age }} | {{ patient.get_gender_display|default:"-" }} | {{ patient.email }} | {{ patient.phone|default:"-" }}<br>
+  Consulting physiotherapist: <b>{{ patient.doctor }}</b><br>
+  Registered: {{ patient.registered_at|date:"d M Y, h:i A" }}</p>
+  <div class="row">
+    <a class="btn" href="{% url 'registration_form' patient.pk %}">View / Print registration form</a>
+    <form method="post" action="{% url 'send_registration' patient.pk %}">{% csrf_token %}
+      <button class="btn alt" type="submit">Send Email</button></form>
+    {% if wa_link %}<a class="btn wa" target="_blank" rel="noopener" href="{{ wa_link }}">WhatsApp</a>{% endif %}
+    <a class="btn alt" href="{% url 'patient_edit' patient.pk %}">Edit</a>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Treatments</h2>
+  <div class="row"><a class="btn" href="{% url 'treatment_add' patient.pk %}">+ Add treatment</a></div>
+  {% for t in treatments %}
+  <div style="border-top:1px solid var(--border);padding:10px 0">
+    <b>{{ t.problem }}</b>{% if t.body_part %} ({{ t.body_part }}){% endif %} - {{ t.doctor }}
+    <span class="tag {% if t.is_ongoing %}warn{% else %}ok{% endif %}">{% if t.is_ongoing %}Ongoing{% else %}Complete{% endif %}</span><br>
+    From {{ t.start_date|date:"d M Y" }} {% if t.end_date %}to {{ t.end_date|date:"d M Y" }}{% else %}until now{% endif %}
+    ({{ t.total_days }} days)
+    <br>{% if t.therapy_type %}Therapy: {{ t.get_therapy_type_display }} | {% endif %}Sessions: <b>{{ t.sessions_done }}{% if t.sessions_planned %} / {{ t.sessions_planned }}{% endif %}</b>
+    {% if t.notes %}<br><span class="muted">{{ t.notes }}</span>{% endif %}
+    <div>Session dates:
+      {% for v in t.visits.all %}<span class="tag">{{ v.date|date:"d M Y" }}{% if v.notes %} - {{ v.notes }}{% endif %}</span> {% empty %}<span class="muted">None</span>{% endfor %}
+    </div>
+    <div class="row"><a class="btn alt" href="{% url 'visit_add' t.pk %}">+ Add session</a>
+    <a class="btn alt" href="{% url 'treatment_edit' t.pk %}">Edit / End date</a></div>
+  </div>
+  {% empty %}<p class="muted">No treatments added yet.</p>{% endfor %}
+</div>
+
+<div class="card">
+  <h2>Payments</h2>
+  <div class="row"><a class="btn" href="{% url 'payment_add' patient.pk %}">+ Generate payment</a></div>
+  <table>
+    <tr><th>Bill</th><th>Date</th><th>Amount</th><th>Status</th><th>Mail sent</th></tr>
+    {% for p in payments %}
+    <tr><td><a href="{% url 'payment_detail' p.pk %}">{{ p.bill_no }}</a></td>
+    <td>{{ p.created_at|date:"d M Y" }}</td><td>₹{{ p.amount }}</td>
+    <td><span class="tag {% if p.status == 'paid' %}ok{% else %}warn{% endif %}">{{ p.get_status_display }}</span></td>
+    <td>{% if p.sent_at %}{{ p.sent_at|date:"d M, h:i A" }}{% else %}-{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="5" class="muted">No payments found.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

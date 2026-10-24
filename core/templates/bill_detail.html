@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="letterhead"><h1>{{ CLINIC_NAME }}</h1><small>{{ CLINIC_TAGLINE }}</small>{% if CLINIC_ADDRESS %}<small>{{ CLINIC_ADDRESS }}</small>{% endif %}{% if CLINIC_PHONE %}<small>Ph: {{ CLINIC_PHONE }}</small>{% endif %}</div>
+  <h2 style="text-align:center">Payment Receipt / Bill</h2>
+  <table>
+    <tr><th>Bill No</th><td>{{ p.bill_no }}</td></tr>
+    <tr><th>Date</th><td>{{ p.created_at|date:"d M Y" }}</td></tr>
+    <tr><th>Patient</th><td>{{ p.patient.name }} ({{ p.patient.registration_no }})</td></tr>
+    <tr><th>Physiotherapist</th><td>{% if p.treatment %}{{ p.treatment.doctor }}{% else %}{{ p.patient.doctor }}{% endif %}</td></tr>
+    {% if p.treatment %}<tr><th>Treatment</th><td>{{ p.treatment.problem }}: {{ p.treatment.start_date|date:"d M Y" }} to {% if p.treatment.end_date %}{{ p.treatment.end_date|date:"d M Y" }}{% else %}ongoing{% endif %}</td></tr>
+    <tr><th>Sessions attended</th><td>{{ p.treatment.sessions_done }}{% if p.treatment.sessions_planned %} / {{ p.treatment.sessions_planned }}{% endif %}</td></tr>{% endif %}
+    {% if p.description %}<tr><th>Details</th><td>{{ p.description }}</td></tr>{% endif %}
+    <tr><th>Amount</th><td><b>₹{{ p.amount }}</b></td></tr>
+    <tr><th>Status</th><td>{{ p.get_status_display }}</td></tr>
+  </table>
+  <div class="row noprint">
+    <form method="post" action="{% url 'payment_send' p.pk %}">{% csrf_token %}
+      <button class="btn" type="submit">Send email ({{ p.patient.email }})</button></form>
+    {% if wa_link %}<a class="btn wa" target="_blank" rel="noopener" href="{{ wa_link }}">Send via WhatsApp</a>{% endif %}
+    {% if p.status != "paid" %}<form method="post" action="{% url 'payment_mark_paid' p.pk %}">{% csrf_token %}
+      <button class="btn alt" type="submit">Mark as Paid</button></form>{% endif %}
+    <button class="btn alt" onclick="window.print()">Print</button>
+    <a class="btn alt" href="{% url 'patient_detail' p.patient.pk %}">Back</a>
+  </div>
+  {% if p.sent_at %}<p class="muted noprint">Last email sent: {{ p.sent_at|date:"d M Y, h:i A" }}</p>{% endif %}
+</div>
+{% endblock %}

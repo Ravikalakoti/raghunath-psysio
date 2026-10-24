@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ CLINIC_NAME }} - Dashboard</h1>
+<div class="grid">
+  <div class="stat"><b>{{ patient_count }}</b><span>Total patients</span></div>
+  <div class="stat"><b>{{ doctor_count }}</b><span>Active physiotherapists</span></div>
+  <div class="stat"><b>{{ ongoing }}</b><span>Ongoing treatments</span></div>
+  <div class="stat"><b>₹{{ pending_amount }}</b><span>Pending payments</span></div>
+</div>
+<div class="row">
+  <a class="btn" href="{% url 'patient_add' %}">+ New patient</a>
+  <a class="btn alt" href="{% url 'doctor_add' %}">+ New physiotherapist</a>
+</div>
+<div class="card">
+  <h2>Recent patients</h2>
+  <table>
+    <tr><th>Reg No</th><th>Name</th><th>Physiotherapist</th><th>Registered</th></tr>
+    {% for p in recent %}
+    <tr><td>{{ p.registration_no }}</td><td><a href="{% url 'patient_detail' p.pk %}">{{ p.name }}</a></td>
+    <td>{{ p.doctor }}</td><td>{{ p.registered_at|date:"d M Y, h:i A" }}</td></tr>
+    {% empty %}<tr><td colspan="4" class="muted">No Patient Yet.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

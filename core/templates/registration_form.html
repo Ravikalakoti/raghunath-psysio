@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="letterhead"><h1>{{ CLINIC_NAME }}</h1><small>{{ CLINIC_TAGLINE }}</small>{% if CLINIC_ADDRESS %}<small>{{ CLINIC_ADDRESS }}</small>{% endif %}{% if CLINIC_PHONE %}<small>Ph: {{ CLINIC_PHONE }}</small>{% endif %}</div>
+  <h2 style="text-align:center">Patient Registration Form</h2>
+  <table>
+    <tr><th>Registration No</th><td>{{ patient.registration_no }}</td></tr>
+    <tr><th>Name</th><td>{{ patient.name }}</td></tr>
+    <tr><th>Email</th><td>{{ patient.email }}</td></tr>
+    <tr><th>Age</th><td>{{ patient.age }}</td></tr>
+    <tr><th>Consulting Physiotherapist</th><td>{{ patient.doctor }}</td></tr>
+    <tr><th>Date &amp; Time</th><td>{{ patient.registered_at|date:"d M Y, h:i A" }}</td></tr>
+  </table>
+  <div class="row noprint">
+    <button class="btn" onclick="window.print()">Print / Save as PDF</button>
+    <form method="post" action="{% url 'send_registration' patient.pk %}">{% csrf_token %}
+      <button class="btn alt" type="submit">Send Email</button></form>
+    {% if wa_link %}<a class="btn wa" target="_blank" rel="noopener" href="{{ wa_link }}">WhatsApp</a>{% endif %}
+    <a class="btn alt" href="{% url 'patient_detail' patient.pk %}">Back</a>
+  </div>
+</div>
+{% endblock %}
